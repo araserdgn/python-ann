@@ -1,0 +1,33 @@
+import numpy as np
+import pandas as pd
+veriler=pd.read_csv(r"C:\Users\ismail\Desktop\kalp_hastalik.csv")
+veriler
+veriler.isnull().sum()
+veriler.describe()
+veriler.corr()['sonuc'].sort_values().plot(kind="bar")
+
+import matplotlib.pyplot as plt
+import seaborn as sbn
+sbn.countplot(x="sonuc",data=veriler)
+
+import tensorflow as tf
+from sklearn.model_selection import train_test_split
+y=veriler["sonuc"].values
+x=veriler.drop("sonuc",axis=1).values
+x_train, x_test, y_train, y_test=train_test_split(x,y, test_size=0.33,random_state=3)
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+model=Sequential()
+x_train.shape
+model.add(Dense(13,activation="relu"))
+model.add(Dense(13,activation="relu"))
+model.add(Dense(13,activation="relu"))
+model.add(Dense(1,activation="sigmoid"))
+model.compile(loss="binary_crossentropy",optimizer="adam")
+model.fit(x=x_train, y=y_train, validation_data=(x_test,y_test),epochs=600, verbose=1)
+modelkaybi=pd.DataFrame(model.history.history)
+modelkaybi.plot()
+tahmin = (model.predict(x_test) > 0.5).astype("int32")
+tahmin
+from sklearn.metrics import classification_report, confusion_matrix
+print(classification_report(y_test,tahmin))
